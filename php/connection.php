@@ -1,7 +1,7 @@
 <?php
 $servername = "db";
-$username = "root";
-$password = "root";
+$username = "devuser";
+$password = "devpass";
 $db_name = "student";
 
 // Create connection
@@ -12,5 +12,5 @@ if ($conn->connect_error) {
   echo "There is a problem";
   die("Connection failed: " . $conn->connect_error);
 }
-echo "Connected successfully";
+//echo "Connected successfully";
 ?>

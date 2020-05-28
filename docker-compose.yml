@@ -12,6 +12,7 @@ services:
    - ./php:/var/www/html/
   ports:
    - 8000:80
+  restart: always
 
  db:
   container_name: mysql8
@@ -19,10 +20,10 @@ services:
   command: --default-authentication-plugin=mysql_native_password
   restart: always
   environment:
-   MYSQL_ROOT_PASSWORD: root
    MYSQL_DATABASE: student
-   MYSQL_USER: root
-   MYSQL_PASSWORD: root
+   MYSQL_ROOT_PASSWORD: root
+   MYSQL_USER: devuser
+   MYSQL_PASSWORD: devpass
   ports:
    - 6033:3306
 

@@ -1,7 +1,7 @@
 <?php
 
 header("Content-Type:application/json");
-include('connection.php');
+require('connection.php');
 
 $request_type= $_SERVER['REQUEST_METHOD'];
 
@@ -31,6 +31,7 @@ switch($request_type){
 function getStudentData(){
 
 	global $conn;
+	$response_file=fopen("response.json","w+") or die("file not created");
 	$result = mysqli_query($conn,"SELECT * FROM tbl_studentdetails ");
  
 	if(mysqli_num_rows($result)>0)
@@ -44,16 +45,23 @@ function getStudentData(){
 	  
 	 $result = ['data' => $data,  'responseCode' => 200];
 	 echo json_encode($result);
-
+	 fwrite($response_file,json_encode($result));
+	 fclose($response_file);
+	 
 	}
 }
 
 function insertData(){
-
+	
 	global $conn;
-	
-	$query = mysqli_query( $conn,"INSERT into tbl_studentdetails (firstname,lastname,age) VALUES ('".$_POST["firstname"]."','".	$_POST["lastname"]."','".$_POST["age"]."')");
-	
+	require("connection.php");
+
+	$data_to_be_inserted = file_get_contents('php://input');
+
+	$array_to_be_inserted=json_decode($data_to_be_inserted,true);
+
+	$query = mysqli_query( $conn,"INSERT into tbl_studentdetails (firstname,lastname,age) VALUES ('".	$array_to_be_inserted["firstname"]."','".$array_to_be_inserted["lastname"]."','".$array_to_be_inserted["age"]."')");
+
 	if($query == true){
 
 		echo "data insterted successfully";
@@ -61,34 +69,43 @@ function insertData(){
 	else{
 		echo "issue with inserting";
 	}
+
 		
 
 }
 function UpdateData(){
 
+	
 	global $conn;
-	parse_str(file_get_contents('php://input'), $_PUT);
-	$fname=$_PUT["firstname"];
-	$lname=$_PUT["lastname"];
-	$age=$_PUT["age"];
-	$id=$_PUT["id"];
-	$querry = mysqli_query( $conn,"UPDATE tbl_studentdetails  set firstname='".$fname."',lastname='".$lname."',age='".$age."' where id ='".$id."'");
-	if($querry==true){
-	
-		echo "Value Updated";
+
+	require("connection.php");
+	$data_to_be_updated = file_get_contents("php://input");
+
+	$data_array = json_decode($data_to_be_updated,true);
+
+	$querry = mysqli_query( $conn,"UPDATE tbl_studentdetails  set firstname='".$data_array['firstname']."',lastname='".$data_array['lastname']."',age='".$data_array['age']."' where id ='".$data_array['id']."'");
+
+	if($querry == true){
+		
+		echo "Data Updated";
+
 	}
-	else{
-		echo "Problem encountered";
+	else
+	{
+		echo "error encountered";
+
 	}
-	
 }
 
 function deleteRecord(){
 
 	global $conn;
-	parse_str(file_get_contents('php://input'), $_DELETE);
-	$id=$_DELETE["id"];
-	$querry = mysqli_query( $conn,"DELETE from tbl_studentdetails where id ='".$id."'");
+	require("connection.php");
+	$data_to_be_deleted = file_get_contents("php://input");
+
+	$data_array = json_decode($data_to_be_deleted,true);
+
+	$querry = mysqli_query( $conn,"DELETE from tbl_studentdetails where id ='".$data_array['id']."'");
 	
 	if($querry==true){
 	

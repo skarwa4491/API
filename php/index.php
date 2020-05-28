@@ -1,5 +1,5 @@
 <?php
-echo "New Content";
 
+echo "This is new content";
 ?>
 
